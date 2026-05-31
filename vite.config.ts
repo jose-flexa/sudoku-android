@@ -12,7 +12,7 @@ export default defineConfig({
         description: 'Mobile-friendly Sudoku game that works offline.',
         theme_color: '#f4efe2',
         background_color: '#f4efe2',
-        display: 'standalone',
+        display: 'fullscreen',
         scope: '/',
         start_url: '/',
         icons: [

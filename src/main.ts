@@ -17,6 +17,35 @@ if (!app) {
 
 registerSW({ immediate: true })
 
+function setupFullscreenOnFirstInteraction(): void {
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches
+
+  if (isStandalone || document.fullscreenElement || !document.documentElement.requestFullscreen) {
+    return
+  }
+
+  let attempted = false
+  const tryFullscreen = async () => {
+    if (attempted) return
+    attempted = true
+    document.removeEventListener('pointerdown', tryFullscreen)
+    document.removeEventListener('keydown', tryFullscreen)
+
+    try {
+      await document.documentElement.requestFullscreen()
+    } catch {
+      // Browser can reject fullscreen requests depending on user settings/policies.
+    }
+  }
+
+  document.addEventListener('pointerdown', tryFullscreen, { once: true })
+  document.addEventListener('keydown', tryFullscreen, { once: true })
+}
+
+setupFullscreenOnFirstInteraction()
+
 const state = {
   puzzle: [] as Array<number | null>,
   solution: [] as number[],
