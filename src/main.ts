@@ -67,7 +67,6 @@ app.innerHTML = `
   <main class="shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">PWA pronto para uso offline</p>
         <h1>Sudoku</h1>
       </div>
       <div class="stats">
