@@ -1,13 +1,14 @@
 import './style.css'
 import { registerSW } from 'virtual:pwa-register'
-
-type Difficulty = 'easy' | 'medium' | 'hard'
-
-const DIFFICULTY_CLUES: Record<Difficulty, number> = {
-  easy: 40,
-  medium: 32,
-  hard: 26,
-}
+import {
+  Difficulty,
+  generatePuzzle,
+  generateSolution,
+  getConflicts,
+  getPeers,
+  isSolved,
+  toMMSS,
+} from './game'
 
 const app = document.querySelector<HTMLDivElement>('#app')
 
@@ -136,97 +137,12 @@ const newGameEl = mustSelect<HTMLButtonElement>('#new-game')
 const hintEl = mustSelect<HTMLButtonElement>('#hint')
 const noteModeEl = mustSelect<HTMLButtonElement>('#note-mode')
 
-function shuffle<T>(items: T[]): T[] {
-  const copy = [...items]
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[copy[i], copy[j]] = [copy[j], copy[i]]
-  }
-  return copy
-}
-
-function baseValue(row: number, col: number): number {
-  return ((row * 3 + Math.floor(row / 3) + col) % 9) + 1
-}
-
-function generateSolution(): number[] {
-  const digits = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9])
-  const rowBands = shuffle([0, 1, 2])
-  const colStacks = shuffle([0, 1, 2])
-  const rows = rowBands.flatMap((band) => shuffle([0, 1, 2]).map((row) => band * 3 + row))
-  const cols = colStacks.flatMap((stack) =>
-    shuffle([0, 1, 2]).map((col) => stack * 3 + col),
-  )
-
-  return rows.flatMap((row) =>
-    cols.map((col) => {
-      const value = baseValue(row, col)
-      return digits[value - 1]
-    }),
-  )
-}
-
-function generatePuzzle(solution: number[], difficulty: Difficulty): Array<number | null> {
-  const puzzle = [...solution]
-  const clues = DIFFICULTY_CLUES[difficulty]
-  const removable = shuffle(Array.from({ length: 81 }, (_, i) => i)).slice(0, 81 - clues)
-  removable.forEach((index) => {
-    puzzle[index] = 0
-  })
-  return puzzle.map((value) => (value === 0 ? null : value))
-}
-
-function toMMSS(total: number): string {
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-}
-
 function setMessage(text: string): void {
   messageEl.textContent = text
 }
 
-function getPeers(index: number): Set<number> {
-  const row = Math.floor(index / 9)
-  const col = index % 9
-  const boxRow = Math.floor(row / 3) * 3
-  const boxCol = Math.floor(col / 3) * 3
-  const peers = new Set<number>()
-
-  for (let c = 0; c < 9; c += 1) {
-    peers.add(row * 9 + c)
-  }
-  for (let r = 0; r < 9; r += 1) {
-    peers.add(r * 9 + col)
-  }
-  for (let r = boxRow; r < boxRow + 3; r += 1) {
-    for (let c = boxCol; c < boxCol + 3; c += 1) {
-      peers.add(r * 9 + c)
-    }
-  }
-
-  peers.delete(index)
-  return peers
-}
-
 function recalculateConflicts(): void {
-  state.conflicts.clear()
-
-  for (let i = 0; i < 81; i += 1) {
-    const value = state.puzzle[i]
-    if (!value) continue
-
-    for (const peer of getPeers(i)) {
-      if (state.puzzle[peer] === value) {
-        state.conflicts.add(i)
-        state.conflicts.add(peer)
-      }
-    }
-  }
-}
-
-function isSolved(): boolean {
-  return state.puzzle.every((value, index) => value === state.solution[index])
+  state.conflicts = getConflicts(state.puzzle)
 }
 
 function updateTopStats(): void {
