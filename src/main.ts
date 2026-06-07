@@ -14,7 +14,24 @@ const app = document.querySelector<HTMLDivElement>('#app')
 if (!app) {
   throw new Error('App container not found')
 }
+let wakeLock: WakeLockSentinel | null = null;
 
+async function requestWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('Screen Wake Lock is active');
+  } catch (err: any) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+}
+
+// Re-request wake lock if the app was minimized and brought back
+document.addEventListener('visibilitychange', async () => {
+  if (wakeLock !== null && document.visibilityState === 'visible') {
+    await requestWakeLock();
+  }
+});
+requestWakeLock()
 registerSW({ immediate: true })
 
 function setupFullscreenOnFirstInteraction(): void {

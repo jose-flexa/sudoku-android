@@ -26,6 +26,10 @@
 * {
   box-sizing: border-box;
 }
+html, body {
+  /* Disables pull-to-refresh and rubber-banding overscroll effects */
+  overscroll-behavior-y: none;
+}
 
 body {
   margin: 0;
