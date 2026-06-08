@@ -33,6 +33,7 @@ The system supports:
 
 3. Number entry
    - Users may enter digits 1 through 9 using the on-screen keypad or keyboard.
+   - When a digit is fully placed in the puzzle (all nine instances are present), that digit is removed from the on-screen keypad.
    - Users may erase cell values with an erase button, Backspace, Delete, or the 0 key.
    - Fixed cells from the initial puzzle cannot be changed.
 
@@ -98,7 +99,7 @@ The UI exposes the following controls:
 - Hint button.
 - Note mode toggle.
 - 9x9 board rendered as grid buttons.
-- On-screen keypad with digits 1-9 and erase.
+- On-screen keypad with digits 1-9 and erase; digits are hidden from the keypad once all nine instances are placed on the board.
 - Live timer, mistakes counter, and hint counter.
 
 Keyboard support:

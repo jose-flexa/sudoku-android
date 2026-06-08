@@ -1,7 +1,7 @@
 import './style.css'
 import { registerSW } from 'virtual:pwa-register'
 import {
-  Difficulty,
+  type Difficulty,
   generatePuzzle,
   generateSolution,
   getConflicts,
@@ -203,9 +203,19 @@ function renderBoard(): void {
 
 function renderKeypad(): void {
   keypadEl.innerHTML = ''
+  const digitCounts = state.puzzle.reduce<Record<number, number>>((counts, value) => {
+    if (value !== null) {
+      counts[value] = (counts[value] || 0) + 1
+    }
+    return counts
+  }, {})
   const keys: Array<number | 'erase'> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'erase']
 
   keys.forEach((key) => {
+    if (typeof key === 'number' && digitCounts[key] >= 9) {
+      return
+    }
+
     const button = document.createElement('button')
     button.type = 'button'
     button.className = 'key'
@@ -224,6 +234,7 @@ function revealLoss(): void {
   state.notes = Array.from({ length: 81 }, () => new Set<number>())
   recalculateConflicts()
   renderBoard()
+  renderKeypad()
   setMessage('Sem vidas restantes. Solução revelada. Toque em Novo Jogo para tentar novamente.')
 }
 
@@ -238,6 +249,7 @@ function inputCell(value: number | null): void {
     state.notes[index].clear()
     recalculateConflicts()
     renderBoard()
+    renderKeypad()
     return
   }
 
@@ -272,8 +284,9 @@ function inputCell(value: number | null): void {
 
   recalculateConflicts()
   renderBoard()
+  renderKeypad()
 
-  if (isSolved()) {
+  if (isSolved(state.puzzle, state.solution)) {
     state.locked = true
     setMessage(`Resolvido em ${toMMSS(state.elapsedSeconds)} com ${state.mistakes} erros. Ótima partida.`)
   }
@@ -309,6 +322,7 @@ function startGame(difficulty: Difficulty): void {
   recalculateConflicts()
   updateTopStats()
   renderBoard()
+  renderKeypad()
   setMessage('Novo tabuleiro gerado. Boa sorte.')
   startTimer()
 }
@@ -331,9 +345,10 @@ function giveHint(): void {
   recalculateConflicts()
   updateTopStats()
   renderBoard()
+  renderKeypad()
   setMessage('Dica usada.')
 
-  if (isSolved()) {
+  if (isSolved(state.puzzle, state.solution)) {
     state.locked = true
     setMessage(`Resolvido em ${toMMSS(state.elapsedSeconds)}. Mandou bem.`)
   }
