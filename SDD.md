@@ -6,7 +6,7 @@ This document describes the software design for the Sudoku web application locat
 
 ### 1.1 Purpose
 
-The Sudoku app aims to provide a responsive, accessible, and offline-capable Sudoku gameplay experience in the browser. The design focuses on clear gameplay mechanics, difficulty levels, keyboard and pointer controls, puzzle validation, and state management.
+The Sudoku app aims to provide a responsive, accessible, and offline-capable Sudoku gameplay experience in the browser. The design focuses on clear gameplay mechanics, difficulty levels, keyboard and pointer controls, puzzle validation, state management, and continuous persistence of the current game.
 
 ### 1.2 Scope
 
@@ -18,6 +18,8 @@ The system supports:
 - Conflict highlighting and live validation.
 - Hint usage and mistake tracking.
 - Timer, error limits, and game completion states.
+- Continuous save of the active game state to local storage.
+- Restoration of saved games after backgrounding or page reload.
 - Progressive Web App features for offline access.
 
 ## 2. Functional Requirements
@@ -58,6 +60,10 @@ The system supports:
 8. Accessibility and offline support
    - The application must provide accessible labels for the board and controls.
    - The PWA service worker must register immediately to support offline use.
+
+9. State persistence
+   - The current game state must be saved continuously to local storage, including whether the game is active, paused, or finished, the current board values, fixed cells, notes, timer, mistake count, hint count, and locked input state.
+   - When the app is restored after being put into the background or reloaded, the saved game state must be restored so the player can continue from the same board state.
 
 ## 3. Architecture Overview
 

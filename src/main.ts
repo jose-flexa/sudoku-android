@@ -64,6 +64,81 @@ function setupFullscreenOnFirstInteraction(): void {
 
 setupFullscreenOnFirstInteraction()
 
+const STORAGE_KEY = 'sudoku-game-state'
+
+type PersistedState = {
+  puzzle: Array<number | null>
+  solution: number[]
+  fixed: boolean[]
+  notes: number[][]
+  selected: number
+  difficulty: Difficulty
+  noteMode: boolean
+  mistakes: number
+  hints: number
+  elapsedSeconds: number
+  locked: boolean
+  highlightDigit: number | null
+}
+
+function createNotes(notesData: number[][]): Set<number>[] {
+  return notesData.map((notes) => new Set<number>(notes))
+}
+
+function persistState(): void {
+  const saved: PersistedState = {
+    puzzle: state.puzzle,
+    solution: state.solution,
+    fixed: state.fixed,
+    notes: state.notes.map((notes) => Array.from(notes)),
+    selected: state.selected,
+    difficulty: state.difficulty,
+    noteMode: state.noteMode,
+    mistakes: state.mistakes,
+    hints: state.hints,
+    elapsedSeconds: state.elapsedSeconds,
+    locked: state.locked,
+    highlightDigit: state.highlightDigit,
+  }
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved))
+}
+
+function loadState(): boolean {
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (!raw) return false
+
+  try {
+    const parsed = JSON.parse(raw) as PersistedState
+    if (
+      !Array.isArray(parsed.puzzle) || parsed.puzzle.length !== 81 ||
+      !Array.isArray(parsed.solution) || parsed.solution.length !== 81 ||
+      !Array.isArray(parsed.fixed) || parsed.fixed.length !== 81 ||
+      !Array.isArray(parsed.notes) || parsed.notes.length !== 81
+    ) {
+      return false
+    }
+
+    state.puzzle = parsed.puzzle
+    state.solution = parsed.solution
+    state.fixed = parsed.fixed
+    state.notes = createNotes(parsed.notes)
+    state.selected = Number.isInteger(parsed.selected) ? parsed.selected : 0
+    state.difficulty = parsed.difficulty
+    state.noteMode = parsed.noteMode
+    state.mistakes = parsed.mistakes
+    state.hints = parsed.hints
+    state.elapsedSeconds = parsed.elapsedSeconds
+    state.locked = parsed.locked
+    state.highlightDigit = parsed.highlightDigit
+
+    state.conflicts = getConflicts(state.puzzle)
+    return true
+  } catch {
+    return false
+  }
+}
+
 const state = {
   puzzle: [] as Array<number | null>,
   solution: [] as number[],
@@ -195,6 +270,7 @@ function renderBoard(): void {
       state.selected = index
       state.highlightDigit = state.puzzle[index]
       renderBoard()
+      persistState()
     })
 
     boardEl.appendChild(cell)
@@ -236,6 +312,7 @@ function revealLoss(): void {
   renderBoard()
   renderKeypad()
   setMessage('Sem vidas restantes. Solução revelada. Toque em Novo Jogo para tentar novamente.')
+  persistState()
 }
 
 function inputCell(value: number | null): void {
@@ -250,6 +327,7 @@ function inputCell(value: number | null): void {
     recalculateConflicts()
     renderBoard()
     renderKeypad()
+    persistState()
     return
   }
 
@@ -261,6 +339,7 @@ function inputCell(value: number | null): void {
       state.notes[index].add(value)
     }
     renderBoard()
+    persistState()
     return
   }
 
@@ -272,6 +351,7 @@ function inputCell(value: number | null): void {
     if (state.mistakes >= 3) {
       revealLoss()
     }
+    persistState()
     return
   }
 
@@ -290,6 +370,8 @@ function inputCell(value: number | null): void {
     state.locked = true
     setMessage(`Resolvido em ${toMMSS(state.elapsedSeconds)} com ${state.mistakes} erros. Ótima partida.`)
   }
+
+  persistState()
 }
 
 function startTimer(): void {
@@ -300,6 +382,7 @@ function startTimer(): void {
     if (state.locked) return
     state.elapsedSeconds += 1
     updateTopStats()
+    persistState()
   }, 1000)
 }
 
@@ -319,11 +402,13 @@ function startGame(difficulty: Difficulty): void {
   state.locked = false
   state.highlightDigit = null
 
+  difficultyEl.value = difficulty
   recalculateConflicts()
   updateTopStats()
   renderBoard()
   renderKeypad()
   setMessage('Novo tabuleiro gerado. Boa sorte.')
+  persistState()
   startTimer()
 }
 
@@ -352,6 +437,8 @@ function giveHint(): void {
     state.locked = true
     setMessage(`Resolvido em ${toMMSS(state.elapsedSeconds)}. Mandou bem.`)
   }
+
+  persistState()
 }
 
 document.addEventListener('keydown', (event) => {
@@ -370,6 +457,7 @@ document.addEventListener('keydown', (event) => {
   if (event.key.toLowerCase() === 'n') {
     state.noteMode = !state.noteMode
     updateTopStats()
+    persistState()
     return
   }
 
@@ -379,15 +467,19 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowUp') {
     state.selected = ((row + 8) % 9) * 9 + col
     renderBoard()
+    persistState()
   } else if (event.key === 'ArrowDown') {
     state.selected = ((row + 1) % 9) * 9 + col
     renderBoard()
+    persistState()
   } else if (event.key === 'ArrowLeft') {
     state.selected = row * 9 + ((col + 8) % 9)
     renderBoard()
+    persistState()
   } else if (event.key === 'ArrowRight') {
     state.selected = row * 9 + ((col + 1) % 9)
     renderBoard()
+    persistState()
   }
 })
 
@@ -406,7 +498,21 @@ hintEl.addEventListener('click', () => {
 noteModeEl.addEventListener('click', () => {
   state.noteMode = !state.noteMode
   updateTopStats()
+  persistState()
+})
+
+window.addEventListener('pagehide', () => {
+  persistState()
 })
 
 renderKeypad()
-startGame('medium')
+
+if (loadState()) {
+  difficultyEl.value = state.difficulty
+  updateTopStats()
+  renderBoard()
+  renderKeypad()
+  startTimer()
+} else {
+  startGame('medium')
+}
