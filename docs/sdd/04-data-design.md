@@ -3,11 +3,9 @@
 ## Domain Model
 | Entity | Description | Key Fields |
 | --- | --- | --- |
-| Game | In-progress or completed Sudoku session | gameId, difficulty, status, startedAt, elapsedSeconds |
-| Board | 9x9 board state | cells[81], fixedMask, notesMap |
-| Move | One user action for undo/redo | moveId, gameId, cellIndex, oldValue, newValue, noteDelta, timestamp |
-| Settings | User preferences | noteModeDefault, highlightDuplicates, mistakeLimit, theme |
-| Stats | Aggregated metrics by difficulty | gamesPlayed, gamesWon, bestTimeSeconds, streak |
+| GameSession | In-progress or completed Sudoku session | id, difficulty, status, elapsedSeconds, mistakes, hintsUsed |
+| Board | 9x9 board state | cells[81] |
+| Cell | Individual board cell | value, isFixed, notes |
 
 ## Data Dictionary
 | Field | Type | Constraints | Description |
@@ -28,12 +26,8 @@
 - Database type: Room on top of SQLite.
 - Tables:
 	- games
-	- moves
-	- stats
-- Preferences: Jetpack DataStore for lightweight settings.
-- Partitioning / indexing strategy:
+- Indexing strategy:
 	- Index games(status, updatedAt) for active-game lookup.
-	- Index stats(difficulty) unique.
 - Backup and retention:
 	- Keep last N completed games (default 100) for history.
 	- Keep full stats aggregate indefinitely unless reset by user.

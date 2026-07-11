@@ -1,30 +1,29 @@
 # 03 - Detailed Design
 
-## Module Breakdown
-| Module | Description | Owner |
+## Package Breakdown
+| Package | Description | Owner |
 | --- | --- | --- |
-| app | Android app entry, navigation, DI wiring | Android Team |
-| feature-game | Gameplay UI and ViewModel, input interactions | Android Team |
-| feature-settings | Settings screen and preference state | Android Team |
-| feature-stats | Statistics and history UI | Android Team |
-| domain | Use cases, board rules, move processing, timer control | Core Team |
-| puzzle-engine | Generator and solver algorithms | Core Team |
-| data | Repositories and persistence implementation | Android Team |
+| app | Android app entry, DI wiring | Android Team |
+| ui.game | Gameplay UI and ViewModel, input interactions | Android Team |
+| domain.usecase | Core game use cases | Core Team |
+| domain.model | Domain entities and rules | Core Team |
+| puzzle | Generator and solver algorithms | Core Team |
+| data | Repositories and local persistence | Android Team |
 
 ## Component Details
 ### Component: GameViewModel
-- Responsibilities: hold GameUiState, handle user intents, call use cases, expose one-shot events.
-- Inputs: UI intents (select cell, enter value, note mode toggle, hint, undo, redo, pause).
-- Outputs: StateFlow<GameUiState>, SharedFlow<GameEvent>.
-- Dependencies: GameRepository, MakeMoveUseCase, UndoUseCase, HintUseCase, TimerController.
-- Failure modes: invalid state transitions, repository write failure.
+- Responsibilities: hold GameUiState, handle user intents, manage game timer, delegate to use cases and repositories.
+- Inputs: UI intents (select cell, enter number).
+- Outputs: StateFlow<GameUiState>.
+- Dependencies: GameRepository, StartGameUseCase.
+- Failure modes: repository write failure, unexpected state.
 
-### Component: MakeMoveUseCase
-- Responsibilities: apply one user move and enforce Sudoku rules.
-- Inputs: current board, selected cell, input value, note mode flag.
-- Outputs: updated board, move result (valid/invalid), optional completion event.
-- Dependencies: BoardValidator, MoveHistoryManager.
-- Failure modes: illegal move on fixed cell, invalid candidate outside 1-9.
+### Component: StartGameUseCase
+- Responsibilities: initialize a new game session with generated puzzle.
+- Inputs: difficulty level.
+- Outputs: GameSession.
+- Dependencies: PuzzleGenerator.
+- Failure modes: generation failure.
 
 ### Component: PuzzleGenerator
 - Responsibilities: create full valid board, remove values according to difficulty, verify uniqueness.
@@ -34,24 +33,24 @@
 - Failure modes: generation timeout, non-unique puzzle candidate.
 
 ### Component: GameRepository
-- Responsibilities: persist and load active game, archive completed games.
-- Inputs: game snapshots, settings updates.
-- Outputs: Flow<GameSnapshot>, game history list.
-- Dependencies: Room DAO, DataStore.
+- Responsibilities: persist and load active game, retrieve game history.
+- Inputs: game sessions.
+- Outputs: Flow<GameSession>, game history list.
+- Dependencies: Room DAO.
 - Failure modes: data mapping mismatch, database I/O error.
 
 ## Sequence / Interaction Notes
 - Scenario 1: Start new game
-	- UI requests difficulty.
+	- UI requests new game with difficulty.
 	- ViewModel calls StartGameUseCase.
-	- Use case invokes PuzzleGenerator and creates initial GameState.
-	- Repository persists game and ViewModel emits state.
+	- Use case invokes PuzzleGenerator and creates initial GameSession.
+	- ViewModel updates state and starts timer.
+	- ViewModel calls Repository to save the new game.
 - Scenario 2: Make move and auto-save
-	- User enters number.
-	- ViewModel invokes MakeMoveUseCase.
-	- Domain returns updated state and validity feedback.
-	- Repository saves snapshot.
-	- UI rerenders board and status.
+	- User enters number for a selected cell.
+	- ViewModel validates move against solution and updates session state.
+	- ViewModel calls Repository to save updated snapshot.
+	- UI rerenders board and status from emitted StateFlow.
 
 ## Error Handling Strategy
 - Validation errors:

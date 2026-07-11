@@ -10,12 +10,12 @@ This project has no external HTTP API in MVP. This section defines internal cont
 ## Endpoints
 | Endpoint | Method | Description | Auth |
 | --- | --- | --- | --- |
-| GameRepository.startNewGame(difficulty) | Function | Creates and persists a new game state | N/A |
-| GameRepository.loadActiveGame() | Function | Returns current active game if present | N/A |
-| GameRepository.saveGame(state) | Function | Persists game snapshot | N/A |
-| GameRepository.completeGame(gameId, summary) | Function | Marks game as completed and updates stats | N/A |
-| PuzzleEngine.generatePuzzle(difficulty, seed?) | Function | Returns puzzle and solution board | N/A |
-| PuzzleEngine.solve(board) | Function | Solves candidate board for validation | N/A |
+| GameRepository.getActiveGame() | Function | Returns current active game Flow | N/A |
+| GameRepository.saveGame(session) | Function | Persists game session | N/A |
+| GameRepository.getGameHistory() | Function | Returns flow of all game sessions | N/A |
+| StartGameUseCase.invoke(difficulty) | Function | Creates and persists a new game session | N/A |
+| PuzzleGenerator.generate(difficulty) | Function | Returns puzzle and solution arrays | N/A |
+| SudokuSolver.solve(board) | Function | Solves candidate board in-place | N/A |
 
 ## Request/Response Examples
 ### Example Contract: startNewGame

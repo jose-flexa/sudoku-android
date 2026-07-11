@@ -13,12 +13,13 @@
 *.class
 
 # Generated build directories
-bin/
-gen/
-out/
-build/
-.gradle/
-.kotlin/
+app/build/**
+bin/**
+gen/**
+out/**
+build/**
+.gradle/**
+.kotlin/**
 
 # ====================================================================
 # IDE - Android Studio / IntelliJ / Workspace specific
