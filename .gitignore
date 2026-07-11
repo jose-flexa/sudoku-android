@@ -1,26 +1,59 @@
-# Logs
-logs
+# ====================================================================
+# Built application files and artifacts
+# ====================================================================
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java and Kotlin class files
+*.class
+
+# Generated build directories
+bin/
+gen/
+out/
+build/
+.gradle/
+.kotlin/
+
+# ====================================================================
+# IDE - Android Studio / IntelliJ / Workspace specific
+# ====================================================================
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+
+# If you prefer to ignore ALL local Android Studio configurations entirely,
+# uncomment the line below. Otherwise, keep the selective entries above.
+# .idea/
+
+# ====================================================================
+# Local environment & Sensitive secrets (DO NOT COMMIT)
+# ====================================================================
+# Contains local SDK path
+local.properties
+
+# Log files
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dev-dist
-dist
-dist-ssr
-*.local
+# Keystore / Signing files
+*.jks
+*.keystore
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Google Services configuration (Uncomment if you use different keys per developer)
+# google-services.json
+
+# ====================================================================
+# OS generated files
+# ====================================================================
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.env
+Thumbs.db
