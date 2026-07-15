@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sudoku</string>
+    <string name="mistakes">Erreurs</string>
+    <string name="time">Durée</string>
+    <string name="congratulations">Félicitations ! Vous avez gagné !</string>
+    <string name="new_game">Nouveau Jeu</string>
+</resources>

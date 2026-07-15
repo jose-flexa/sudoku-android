@@ -5,11 +5,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sudoku.domain.model.Difficulty
 import com.example.sudoku.domain.model.GameStatus
-
+import com.example.sudoku.R
 @Composable
 fun GameScreen(
     viewModel: GameViewModel = hiltViewModel()
@@ -29,8 +30,8 @@ fun GameScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Mistakes: ${uiState.mistakes}", style = MaterialTheme.typography.titleMedium)
-                Text(text = "Time: ${formatTime(uiState.elapsedSeconds)}", style = MaterialTheme.typography.titleMedium)
+                Text(text = "${stringResource(R.string.mistakes)}: ${uiState.mistakes}", style = MaterialTheme.typography.titleMedium)
+                Text(text = "${stringResource(R.string.time)}: ${formatTime(uiState.elapsedSeconds)}", style = MaterialTheme.typography.titleMedium)
             }
             Spacer(modifier = Modifier.height(16.dp))
             
@@ -44,10 +45,11 @@ fun GameScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             if (uiState.status == GameStatus.WON) {
-                Text(text = "Congratulations! You won!", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = stringResource(R.string.congratulations), style = MaterialTheme.typography.headlineMedium)
+                Spacer(modifier = Modifier.
+                height(16.dp))
                 Button(onClick = { viewModel.startNewGame(Difficulty.EASY) }) {
-                    Text(text = "New Game")
+                    Text(text = stringResource(R.string.new_game))
                 }
             } else {
                 NumberKeyboard(
