@@ -12,5 +12,6 @@ data class GameUiState(
     val elapsedSeconds: Int = 0,
     val mistakes: Int = 0,
     val hintsUsed: Int = 0,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val completedDigits: Set<Int> = emptySet()
 )

@@ -7,6 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.sudoku.domain.model.Difficulty
+import com.example.sudoku.domain.model.GameStatus
 
 @Composable
 fun GameScreen(
@@ -41,10 +43,19 @@ fun GameScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            NumberKeyboard(
-                onNumberClick = viewModel::onNumberInput,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (uiState.status == GameStatus.WON) {
+                Text(text = "Congratulations! You won!", style = MaterialTheme.typography.headlineMedium)
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { viewModel.startNewGame(Difficulty.EASY) }) {
+                    Text(text = "New Game")
+                }
+            } else {
+                NumberKeyboard(
+                    onNumberClick = viewModel::onNumberInput,
+                    completedDigits = uiState.completedDigits,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -58,21 +69,30 @@ private fun formatTime(seconds: Int): String {
 @Composable
 fun NumberKeyboard(
     onNumberClick: (Int) -> Unit,
+    completedDigits: Set<Int>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             for (i in 1..5) {
-                Button(onClick = { onNumberClick(i) }) {
-                    Text(text = i.toString())
+                if (i !in completedDigits) {
+                    Button(onClick = { onNumberClick(i) }) {
+                        Text(text = i.toString())
+                    }
+                } else {
+                    Spacer(modifier = Modifier.size(48.dp)) // Maintain layout spacing
                 }
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             for (i in 6..9) {
-                Button(onClick = { onNumberClick(i) }) {
-                    Text(text = i.toString())
+                if (i !in completedDigits) {
+                    Button(onClick = { onNumberClick(i) }) {
+                        Text(text = i.toString())
+                    }
+                } else {
+                    Spacer(modifier = Modifier.size(48.dp))
                 }
             }
             Button(onClick = { onNumberClick(0) }) {

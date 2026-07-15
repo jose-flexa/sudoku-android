@@ -22,32 +22,47 @@ fun SudokuBoard(
     onCellClick: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val selectedValue = selectedCell?.let { board[it.first, it.second].value }
+
     Column(
         modifier = modifier
             .aspectRatio(1f)
             .border(2.dp, Color.Black)
     ) {
-        for (row in 0 until 9) {
+        for (blockRow in 0 until 3) {
             Row(modifier = Modifier.weight(1f)) {
-                for (col in 0 until 9) {
-                    val isSelected = selectedCell?.first == row && selectedCell?.second == col
-                    val cell = board[row, col]
-                    SudokuCell(
-                        cell = cell,
-                        isSelected = isSelected,
-                        onClick = { onCellClick(row, col) },
+                for (blockCol in 0 until 3) {
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .border(0.5.dp, Color.Gray)
-                            // Thick borders for 3x3 grids
-                            .padding(
-                                start = if (col % 3 == 0) 1.dp else 0.dp,
-                                end = if (col == 8) 1.dp else 0.dp,
-                                top = if (row % 3 == 0) 1.dp else 0.dp,
-                                bottom = if (row == 8) 1.dp else 0.dp
-                            )
-                    )
+                            .border(1.dp, Color.Black)
+                    ) {
+                        Column {
+                            for (rowInBlock in 0 until 3) {
+                                Row(modifier = Modifier.weight(1f)) {
+                                    for (colInBlock in 0 until 3) {
+                                        val row = blockRow * 3 + rowInBlock
+                                        val col = blockCol * 3 + colInBlock
+                                        val isSelected = selectedCell?.first == row && selectedCell?.second == col
+                                        val cell = board[row, col]
+                                        val isSameDigit = selectedValue != 0 && cell.value == selectedValue
+
+                                        SudokuCell(
+                                            cell = cell,
+                                            isSelected = isSelected,
+                                            isSameDigit = isSameDigit,
+                                            onClick = { onCellClick(row, col) },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .fillMaxHeight()
+                                                .border(0.5.dp, Color.LightGray)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -58,6 +73,7 @@ fun SudokuBoard(
 fun SudokuCell(
     cell: Cell,
     isSelected: Boolean,
+    isSameDigit: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -66,6 +82,7 @@ fun SudokuCell(
             .background(
                 when {
                     isSelected -> Color.Cyan.copy(alpha = 0.3f)
+                    isSameDigit -> Color.Yellow.copy(alpha = 0.3f)
                     cell.isFixed -> Color.LightGray.copy(alpha = 0.2f)
                     else -> Color.White
                 }

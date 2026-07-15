@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sudoku.domain.model.Difficulty
 import com.example.sudoku.domain.model.GameSession
+import com.example.sudoku.domain.model.GameStatus
 import com.example.sudoku.domain.repository.GameRepository
 import com.example.sudoku.domain.usecase.StartGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,8 +88,13 @@ class GameViewModel @Inject constructor(
         }
 
         val updatedGame = game.copy(board = newBoard, mistakes = newMistakes)
-        currentGame = updatedGame
-        updateStateWithGame(updatedGame)
+        
+        // Check if won: all cells filled and no errors
+        val isWon = updatedGame.board.cells.all { it.value != 0 && !it.isError }
+        val finalGame = if (isWon) updatedGame.copy(status = GameStatus.WON) else updatedGame
+
+        currentGame = finalGame
+        updateStateWithGame(finalGame)
         
         viewModelScope.launch {
             gameRepository.saveGame(updatedGame)
@@ -96,6 +102,11 @@ class GameViewModel @Inject constructor(
     }
 
     private fun updateStateWithGame(game: GameSession) {
+        val completedDigits = (1..9).filter { digit ->
+            val count = game.board.cells.count { it.value == digit && !it.isError }
+            count == 9
+        }.toSet()
+
         _uiState.update {
             it.copy(
                 board = game.board,
@@ -104,7 +115,8 @@ class GameViewModel @Inject constructor(
                 elapsedSeconds = game.elapsedSeconds,
                 mistakes = game.mistakes,
                 hintsUsed = game.hintsUsed,
-                isLoading = false
+                isLoading = false,
+                completedDigits = completedDigits
             )
         }
     }
