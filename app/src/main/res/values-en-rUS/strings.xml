@@ -5,4 +5,5 @@
     <string name="time">Time</string>
     <string name="congratulations">Congratulations! You won!</string>
     <string name="new_game">New Game</string>
+    <string name="reset_game">Reset Game</string>
 </resources>

@@ -18,7 +18,7 @@ import javax.inject.Inject
 class GameViewModel @Inject constructor(
     private val startGameUseCase: StartGameUseCase,
     private val gameRepository: GameRepository
-) : ViewModel() {
+) : ViewModel(), GameActions {
 
     private val _uiState = MutableStateFlow(GameUiState(isLoading = true))
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -56,7 +56,7 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    fun startNewGame(difficulty: Difficulty) {
+    override fun startNewGame(difficulty: Difficulty) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val game = startGameUseCase(difficulty)
@@ -70,7 +70,7 @@ class GameViewModel @Inject constructor(
         _uiState.update { it.copy(selectedCell = row to col) }
     }
 
-    fun onNumberInput(number: Int) {
+    override fun onNumberInput(number: Int) {
         val selected = _uiState.value.selectedCell ?: return
         val game = currentGame ?: return
         
@@ -99,6 +99,10 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             gameRepository.saveGame(updatedGame)
         }
+    }
+
+    override fun showClue() {
+        TODO("Not yet implemented")
     }
 
     private fun updateStateWithGame(game: GameSession) {

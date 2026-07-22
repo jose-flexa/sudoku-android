@@ -5,12 +5,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sudoku.domain.model.Difficulty
 import com.example.sudoku.domain.model.GameStatus
 import com.example.sudoku.R
+
+interface GameActions {
+    fun startNewGame(difficulty: Difficulty)
+    fun onNumberInput(number: Int)
+    fun showClue()
+}
 @Composable
 fun GameScreen(
     viewModel: GameViewModel = hiltViewModel()
@@ -53,7 +61,7 @@ fun GameScreen(
                 }
             } else {
                 NumberKeyboard(
-                    onNumberClick = viewModel::onNumberInput,
+                    gameActions = viewModel,
                     completedDigits = uiState.completedDigits,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -70,35 +78,26 @@ private fun formatTime(seconds: Int): String {
 
 @Composable
 fun NumberKeyboard(
-    onNumberClick: (Int) -> Unit,
+    gameActions: GameActions,
     completedDigits: Set<Int>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            for (i in 1..5) {
-                if (i !in completedDigits) {
-                    Button(onClick = { onNumberClick(i) }) {
+            for (i in 1..9) {
+                    OutlinedButton(onClick = { gameActions.onNumberInput(i) }, shape = RectangleShape, modifier = Modifier.weight(
+                        1f
+                    ).alpha(if (i in completedDigits) 0f else 1f)) {
                         Text(text = i.toString())
-                    }
-                } else {
-                    Spacer(modifier = Modifier.size(48.dp)) // Maintain layout spacing
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            for (i in 6..9) {
-                if (i !in completedDigits) {
-                    Button(onClick = { onNumberClick(i) }) {
-                        Text(text = i.toString())
-                    }
-                } else {
-                    Spacer(modifier = Modifier.size(48.dp))
-                }
+            Button(onClick = { gameActions.startNewGame(Difficulty.EASY) }, shape = RectangleShape, modifier = Modifier.weight(1f)) {
+                Text(text = stringResource(R.string.reset_game))
             }
-            Button(onClick = { onNumberClick(0) }) {
-                Text(text = "X")
+            Button(onClick = { gameActions.showClue() }, shape = RectangleShape, modifier = Modifier.weight(1f)) {
+                Text(text = stringResource(R.string.show_clue))
             }
         }
     }

@@ -5,4 +5,5 @@
     <string name="time">Durée</string>
     <string name="congratulations">Félicitations ! Vous avez gagné !</string>
     <string name="new_game">Nouveau Jeu</string>
+    <string name="reset_game">Réinitialiser le Jeu</string>
 </resources>
