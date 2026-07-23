@@ -13,7 +13,7 @@
 ## Component Details
 ### Component: GameViewModel
 - Responsibilities: hold GameUiState, handle user intents, manage game timer, delegate to use cases and repositories.
-- Inputs: UI intents (select cell, enter number).
+- Inputs: UI intents (select cell, enter number, change difficulty).
 - Outputs: StateFlow<GameUiState>.
 - Dependencies: GameRepository, StartGameUseCase.
 - Failure modes: repository write failure, unexpected state.
@@ -41,7 +41,7 @@
 
 ## Sequence / Interaction Notes
 - Scenario 1: Start new game
-	- UI requests new game with difficulty.
+	- UI requests new game with difficulty (via Difficulty Selector or New Game button).
 	- ViewModel calls StartGameUseCase.
 	- Use case invokes PuzzleGenerator and creates initial GameSession.
 	- ViewModel updates state and starts timer.

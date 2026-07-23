@@ -6,4 +6,5 @@
     <string name="new_game">New Game</string>
     <string name="reset_game">Reset Game</string>
     <string name="show_clue">Show Clue</string>
+    <string name="difficulty">Difficulty</string>
 </resources>

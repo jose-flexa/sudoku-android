@@ -6,4 +6,6 @@
     <string name="congratulations">Félicitations ! Vous avez gagné !</string>
     <string name="new_game">Nouveau Jeu</string>
     <string name="reset_game">Réinitialiser le Jeu</string>
+    <string name="show_clue">Indice</string>
+    <string name="difficulty">Difficulté</string>
 </resources>

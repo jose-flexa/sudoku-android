@@ -1,6 +1,7 @@
 package com.example.sudoku.ui.game
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -67,6 +68,14 @@ fun GameScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+            
+            Spacer(modifier = Modifier.weight(1f))
+            
+            DifficultySelector(
+                selectedDifficulty = uiState.difficulty,
+                onDifficultySelected = viewModel::startNewGame,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -100,6 +109,53 @@ fun NumberKeyboard(
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = { gameActions.showClue() }, shape = RectangleShape, modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(R.string.show_clue))
+            }
+        }
+    }
+}
+
+@Composable
+fun DifficultySelector(
+    selectedDifficulty: Difficulty,
+    onDifficultySelected: (Difficulty) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = stringResource(R.string.difficulty),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Difficulty.entries.forEach { difficulty ->
+                val isSelected = difficulty == selectedDifficulty
+                OutlinedButton(
+                    onClick = { onDifficultySelected(difficulty) },
+                    shape = when (difficulty) {
+                        Difficulty.EASY -> RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
+                        Difficulty.EXPERT -> RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
+                        else -> RectangleShape
+                    },
+                    colors = if (isSelected) {
+                        ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    } else {
+                        ButtonDefaults.outlinedButtonColors()
+                    },
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp)
+                ) {
+                    Text(
+                        text = difficulty.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }
