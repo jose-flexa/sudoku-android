@@ -151,7 +151,12 @@ fun DifficultySelector(
                     contentPadding = PaddingValues(horizontal = 4.dp)
                 ) {
                     Text(
-                        text = difficulty.name,
+                        text = stringResource(when (difficulty) {
+                            Difficulty.EASY -> R.string.difficulty_easy
+                            Difficulty.MEDIUM -> R.string.difficulty_medium
+                            Difficulty.HARD -> R.string.difficulty_hard
+                            Difficulty.EXPERT -> R.string.difficulty_expert
+                        }),
                         style = MaterialTheme.typography.labelSmall,
                         maxLines = 1
                     )

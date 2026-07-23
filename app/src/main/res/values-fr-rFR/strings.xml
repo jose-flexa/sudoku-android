@@ -8,4 +8,8 @@
     <string name="reset_game">Réinitialiser le Jeu</string>
     <string name="show_clue">Indice</string>
     <string name="difficulty">Difficulté</string>
+    <string name="difficulty_easy">Facile</string>
+    <string name="difficulty_medium">Moyen</string>
+    <string name="difficulty_hard">Difficile</string>
+    <string name="difficulty_expert">Expert</string>
 </resources>
