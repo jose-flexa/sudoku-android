@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sudoku</string>
+    <string name="app_name">Sudo-Cat</string>
     <string name="mistakes">Mistakes</string>
     <string name="time">Time</string>
     <string name="congratulations">Congratulations! You won!</string>
