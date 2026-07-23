@@ -8,5 +8,5 @@ data class GameSession(
     val status: GameStatus,
     val elapsedSeconds: Int,
     val mistakes: Int,
-    val hintsUsed: Int
+    val remainingHints: Int
 )

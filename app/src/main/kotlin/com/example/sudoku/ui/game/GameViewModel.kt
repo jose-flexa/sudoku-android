@@ -102,7 +102,38 @@ class GameViewModel @Inject constructor(
     }
 
     override fun showClue() {
-        TODO("Not yet implemented")
+        if (_uiState.value.remainingHints <= 0) return
+        val game = currentGame ?: return
+        val selectedCell = _uiState.value.selectedCell ?: return
+
+        val (row, col) = selectedCell
+        val cell = game.board[row, col]
+
+        // Only show clue for empty, non-fixed cells
+        if (!cell.isEmpty || cell.isFixed) return
+
+        val correctValue = game.solution[row, col].value
+
+        // Update the board with the correct value
+        val newBoard = game.board.withCell(row, col) {
+            it.copy(value = correctValue, isError = false, notes = emptySet())
+        }
+
+        val updatedGame = game.copy(
+            board = newBoard,
+            remainingHints = game.remainingHints - 1
+        )
+
+        // Check if won: all cells filled and no errors
+        val isWon = updatedGame.board.cells.all { it.value != 0 && !it.isError }
+        val finalGame = if (isWon) updatedGame.copy(status = GameStatus.WON) else updatedGame
+
+        currentGame = finalGame
+        updateStateWithGame(finalGame)
+
+        viewModelScope.launch {
+            gameRepository.saveGame(finalGame)
+        }
     }
 
     private fun updateStateWithGame(game: GameSession) {
@@ -118,7 +149,7 @@ class GameViewModel @Inject constructor(
                 status = game.status,
                 elapsedSeconds = game.elapsedSeconds,
                 mistakes = game.mistakes,
-                hintsUsed = game.hintsUsed,
+                remainingHints = game.remainingHints,
                 isLoading = false,
                 completedDigits = completedDigits
             )

@@ -31,7 +31,7 @@ class StartGameUseCase @Inject constructor(
             status = GameStatus.ACTIVE,
             elapsedSeconds = 0,
             mistakes = 0,
-            hintsUsed = 0
+            remainingHints = 3
         )
         
         gameRepository.saveGame(gameSession)

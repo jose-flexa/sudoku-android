@@ -11,7 +11,7 @@ data class GameUiState(
     val selectedCell: Pair<Int, Int>? = null,
     val elapsedSeconds: Int = 0,
     val mistakes: Int = 0,
-    val hintsUsed: Int = 0,
+    val remainingHints: Int = 3,
     val isLoading: Boolean = false,
     val completedDigits: Set<Int> = emptySet()
 )

@@ -16,6 +16,6 @@ data class GameEntity(
     val notesJson: String,
     val elapsedSeconds: Int,
     val mistakes: Int,
-    val hintsUsed: Int,
+    val remainingHints: Int,
     val updatedAt: Long
 )

@@ -45,7 +45,7 @@ class GameRepositoryImpl @Inject constructor(
             status = status,
             elapsedSeconds = elapsedSeconds,
             mistakes = mistakes,
-            hintsUsed = hintsUsed
+            remainingHints = remainingHints
         )
     }
 
@@ -60,7 +60,7 @@ class GameRepositoryImpl @Inject constructor(
             notesJson = "{}", // Simplified for now
             elapsedSeconds = elapsedSeconds,
             mistakes = mistakes,
-            hintsUsed = hintsUsed,
+            remainingHints = remainingHints,
             updatedAt = System.currentTimeMillis()
         )
     }

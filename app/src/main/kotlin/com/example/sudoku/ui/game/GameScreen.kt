@@ -39,6 +39,7 @@ fun GameScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "${stringResource(R.string.mistakes)}: ${uiState.mistakes}", style = MaterialTheme.typography.titleMedium)
+                Text(text = "${stringResource(R.string.show_clue)}: ${uiState.remainingHints}", style = MaterialTheme.typography.titleMedium)
                 Text(text = "${stringResource(R.string.time)}: ${formatTime(uiState.elapsedSeconds)}", style = MaterialTheme.typography.titleMedium)
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -56,7 +57,7 @@ fun GameScreen(
                 Text(text = stringResource(R.string.congratulations), style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.
                 height(16.dp))
-                Button(onClick = { viewModel.startNewGame(Difficulty.EASY) }) {
+                Button(onClick = { viewModel.startNewGame(Difficulty.EASY) }, shape = RectangleShape) {
                     Text(text = stringResource(R.string.new_game))
                 }
             } else {
@@ -96,6 +97,7 @@ fun NumberKeyboard(
             Button(onClick = { gameActions.startNewGame(Difficulty.EASY) }, shape = RectangleShape, modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(R.string.reset_game))
             }
+            Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = { gameActions.showClue() }, shape = RectangleShape, modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(R.string.show_clue))
             }

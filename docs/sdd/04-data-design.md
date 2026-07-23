@@ -8,19 +8,19 @@
 | Cell | Individual board cell | value, isFixed, notes |
 
 ## Data Dictionary
-| Field | Type | Constraints | Description |
-| --- | --- | --- | --- |
-| gameId | String (UUID) | Required, unique | Unique game identifier |
-| difficulty | Enum | Easy/Medium/Hard/Expert | Selected difficulty |
-| status | Enum | Active/Paused/Won/Abandoned | Current game status |
-| boardValues | String | 81 chars, 0-9 | Current board values serialized |
-| fixedMask | String | 81 chars, 0/1 | Indicates immutable clue cells |
-| solutionValues | String | 81 chars, 1-9 | Solved board for validation/hints |
-| notesJson | String | Valid JSON | Candidate notes per cell |
-| elapsedSeconds | Int | >= 0 | Active elapsed time |
-| mistakes | Int | >= 0 | Number of invalid committed entries |
-| hintsUsed | Int | >= 0 | Number of consumed hints |
-| updatedAt | Long | Unix epoch ms | Last save timestamp |
+| Field          | Type | Constraints | Description                         |
+|----------------| --- | --- |-------------------------------------|
+| gameId         | String (UUID) | Required, unique | Unique game identifier              |
+| difficulty     | Enum | Easy/Medium/Hard/Expert | Selected difficulty                 |
+| status         | Enum | Active/Paused/Won/Abandoned | Current game status                 |
+| boardValues    | String | 81 chars, 0-9 | Current board values serialized     |
+| fixedMask      | String | 81 chars, 0/1 | Indicates immutable clue cells      |
+| solutionValues | String | 81 chars, 1-9 | Solved board for validation/hints   |
+| notesJson      | String | Valid JSON | Candidate notes per cell            |
+| elapsedSeconds | Int | >= 0 | Active elapsed time                 |
+| mistakes       | Int | >= 0 | Number of invalid committed entries |
+| remainingHints | Int | >= 0 | Number of remaining hints               |
+| updatedAt      | Long | Unix epoch ms | Last save timestamp                 |
 
 ## Storage Design
 - Database type: Room on top of SQLite.
