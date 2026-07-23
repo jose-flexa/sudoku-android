@@ -20,7 +20,7 @@ This project has no external HTTP API in MVP. This section defines internal cont
 ## Request/Response Examples
 ### Example Contract: startNewGame
 - Request:
-	- input: difficulty = Hard
+	- input: difficulty = Medium
 - Response:
 	- output:
 		- gameId: UUID

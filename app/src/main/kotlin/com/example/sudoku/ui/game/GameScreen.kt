@@ -57,7 +57,7 @@ fun GameScreen(
                 Text(text = stringResource(R.string.congratulations), style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.
                 height(16.dp))
-                Button(onClick = { viewModel.startNewGame(Difficulty.EASY) }, shape = RectangleShape) {
+                Button(onClick = { viewModel.startNewGame(Difficulty.MEDIUM) }, shape = RectangleShape) {
                     Text(text = stringResource(R.string.new_game))
                 }
             } else {

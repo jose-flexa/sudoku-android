@@ -6,7 +6,7 @@ import com.example.sudoku.domain.model.GameStatus
 
 data class GameUiState(
     val board: Board = Board(),
-    val difficulty: Difficulty = Difficulty.EASY,
+    val difficulty: Difficulty = Difficulty.MEDIUM,
     val status: GameStatus = GameStatus.ACTIVE,
     val selectedCell: Pair<Int, Int>? = null,
     val elapsedSeconds: Int = 0,

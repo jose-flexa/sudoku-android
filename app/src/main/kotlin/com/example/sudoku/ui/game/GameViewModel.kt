@@ -51,7 +51,7 @@ class GameViewModel @Inject constructor(
                 updateStateWithGame(game)
                 startTimer()
             } ?: run {
-                startNewGame(Difficulty.EASY)
+                startNewGame(Difficulty.MEDIUM)
             }
         }
     }
