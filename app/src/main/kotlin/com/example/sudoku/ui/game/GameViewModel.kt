@@ -77,11 +77,12 @@ class GameViewModel @Inject constructor(
         val cell = game.board[selected.first, selected.second]
         if (cell.isFixed) return
 
+        val isError = number != 0 && number != game.solution[selected.first, selected.second].value
         val newBoard = game.board.withCell(selected.first, selected.second) {
-            it.copy(value = number, isError = number != 0 && number != game.solution[selected.first, selected.second].value)
+            it.copy(value = number, isError = isError)
         }
         
-        val newMistakes = if (number != 0 && number != game.solution[selected.first, selected.second].value) {
+        val newMistakes = if (isError) {
             game.mistakes + 1
         } else {
             game.mistakes
@@ -94,8 +95,38 @@ class GameViewModel @Inject constructor(
         val finalGame = if (isWon) updatedGame.copy(status = GameStatus.WON) else updatedGame
 
         currentGame = finalGame
+        
+        // Update last error cell
+        if (isError) {
+            _uiState.update { it.copy(lastErrorCell = selected) }
+        } else if (number == 0 || !isError) {
+            // If erasing or correct value, and it was the last error cell, clear it
+            if (_uiState.value.lastErrorCell == selected) {
+                _uiState.update { it.copy(lastErrorCell = null) }
+            }
+        }
+
         updateStateWithGame(finalGame)
         
+        viewModelScope.launch {
+            gameRepository.saveGame(updatedGame)
+        }
+    }
+
+    override fun onEraseLastError() {
+        val errorCell = _uiState.value.lastErrorCell ?: return
+        val game = currentGame ?: return
+
+        val newBoard = game.board.withCell(errorCell.first, errorCell.second) {
+            it.copy(value = 0, isError = false)
+        }
+
+        val updatedGame = game.copy(board = newBoard)
+        currentGame = updatedGame
+        
+        _uiState.update { it.copy(lastErrorCell = null) }
+        updateStateWithGame(updatedGame)
+
         viewModelScope.launch {
             gameRepository.saveGame(updatedGame)
         }
@@ -123,6 +154,11 @@ class GameViewModel @Inject constructor(
             board = newBoard,
             remainingHints = game.remainingHints - 1
         )
+
+        // Clear last error if this hint filled it
+        if (_uiState.value.lastErrorCell == selectedCell) {
+            _uiState.update { it.copy(lastErrorCell = null) }
+        }
 
         // Check if won: all cells filled and no errors
         val isWon = updatedGame.board.cells.all { it.value != 0 && !it.isError }

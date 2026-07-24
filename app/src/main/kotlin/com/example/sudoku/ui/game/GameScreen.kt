@@ -18,6 +18,7 @@ import com.example.sudoku.R
 interface GameActions {
     fun startNewGame(difficulty: Difficulty)
     fun onNumberInput(number: Int)
+    fun onEraseLastError()
     fun showClue()
 }
 @Composable
@@ -92,22 +93,70 @@ fun NumberKeyboard(
     completedDigits: Set<Int>,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            for (i in 1..9) {
-                    OutlinedButton(onClick = { gameActions.onNumberInput(i) }, shape = RectangleShape, modifier = Modifier.weight(
-                        1f
-                    ).alpha(if (i in completedDigits) 0f else 1f)) {
-                        Text(text = i.toString())
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Row for digits 1-5
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            for (i in 1..5) {
+                OutlinedButton(
+                    onClick = { gameActions.onNumberInput(i) },
+                    shape = RectangleShape,
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .alpha(if (i in completedDigits) 0f else 1f)
+                ) {
+                    Text(text = i.toString())
                 }
             }
         }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = { gameActions.startNewGame(Difficulty.EASY) }, shape = RectangleShape, modifier = Modifier.weight(1f)) {
+        // Row for digits 6-9 + Erase Button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            for (i in 6..9) {
+                OutlinedButton(
+                    onClick = { gameActions.onNumberInput(i) },
+                    shape = RectangleShape,
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .alpha(if (i in completedDigits) 0f else 1f)
+                ) {
+                    Text(text = i.toString())
+                }
+            }
+            // Erase Last Error Button
+            OutlinedButton(
+                onClick = { gameActions.onEraseLastError() },
+                shape = RectangleShape,
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "X", color = MaterialTheme.colorScheme.error)
+            }
+        }
+        
+        // Row for Game Actions
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = { gameActions.startNewGame(Difficulty.EASY) },
+                shape = RectangleShape,
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(text = stringResource(R.string.reset_game))
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { gameActions.showClue() }, shape = RectangleShape, modifier = Modifier.weight(1f)) {
+            Button(
+                onClick = { gameActions.showClue() },
+                shape = RectangleShape,
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(text = stringResource(R.string.show_clue))
             }
         }

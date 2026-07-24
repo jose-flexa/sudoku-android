@@ -13,7 +13,7 @@
 ## Component Details
 ### Component: GameViewModel
 - Responsibilities: hold GameUiState, handle user intents, manage game timer, delegate to use cases and repositories.
-- Inputs: UI intents (select cell, enter number, change difficulty).
+- Inputs: UI intents (select cell, enter number, erase last error, change difficulty).
 - Outputs: StateFlow<GameUiState>.
 - Dependencies: GameRepository, StartGameUseCase.
 - Failure modes: repository write failure, unexpected state.
@@ -48,7 +48,8 @@
 	- ViewModel calls Repository to save the new game.
 - Scenario 2: Make move and auto-save
 	- User enters number for a selected cell.
-	- ViewModel validates move against solution and updates session state.
+	- ViewModel validates move against solution and updates session state (tracking last error if applicable).
+	- User can tap 'X' to erase the last cell filled with an error.
 	- ViewModel calls Repository to save updated snapshot.
 	- UI rerenders board and status from emitted StateFlow.
 
