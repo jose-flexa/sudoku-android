@@ -78,9 +78,14 @@ class GameViewModel @Inject constructor(
         val cell = game.board[selected.first, selected.second]
         if (cell.isFixed) return
 
+        if (_uiState.value.isNoteMode) {
+            handleNoteInput(selected, number)
+            return
+        }
+
         val isError = number != 0 && number != game.solution[selected.first, selected.second].value
         val newBoard = game.board.withCell(selected.first, selected.second) {
-            it.copy(value = number, isError = isError)
+            it.copy(value = number, isError = isError, notes = emptySet())
         }
         
         val newMistakes = if (isError) {
@@ -112,6 +117,37 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             gameRepository.saveGame(updatedGame)
         }
+    }
+
+    private fun handleNoteInput(selected: Pair<Int, Int>, number: Int) {
+        if (number == 0) return // Cannot add '0' as a note
+        val game = currentGame ?: return
+        val cell = game.board[selected.first, selected.second]
+        
+        // Only allow notes on empty cells
+        if (cell.value != 0) return
+
+        val newNotes = if (cell.notes.contains(number)) {
+            cell.notes - number
+        } else {
+            cell.notes + number
+        }
+
+        val newBoard = game.board.withCell(selected.first, selected.second) {
+            it.copy(notes = newNotes)
+        }
+
+        val updatedGame = game.copy(board = newBoard)
+        currentGame = updatedGame
+        updateStateWithGame(updatedGame)
+
+        viewModelScope.launch {
+            gameRepository.saveGame(updatedGame)
+        }
+    }
+
+    override fun toggleNoteMode() {
+        _uiState.update { it.copy(isNoteMode = !it.isNoteMode) }
     }
 
     override fun onEraseLastError() {

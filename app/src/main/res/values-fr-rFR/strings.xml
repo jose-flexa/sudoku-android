@@ -7,6 +7,7 @@
     <string name="new_game">Nouveau Jeu</string>
     <string name="reset_game">Réinitialiser le Jeu</string>
     <string name="show_clue">Indice</string>
+    <string name="notes">Notes</string>
     <string name="difficulty">Difficulté</string>
     <string name="difficulty_easy">Facile</string>
     <string name="difficulty_medium">Moyen</string>

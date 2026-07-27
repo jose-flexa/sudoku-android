@@ -19,6 +19,7 @@ interface GameActions {
     fun startNewGame(difficulty: Difficulty)
     fun onNumberInput(number: Int)
     fun onEraseLastError()
+    fun toggleNoteMode()
     fun showClue()
 }
 @Composable
@@ -65,6 +66,7 @@ fun GameScreen(
             } else {
                 NumberKeyboard(
                     gameActions = viewModel,
+                    isNoteMode = uiState.isNoteMode,
                     completedDigits = uiState.completedDigits,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -90,6 +92,7 @@ private fun formatTime(seconds: Int): String {
 @Composable
 fun NumberKeyboard(
     gameActions: GameActions,
+    isNoteMode: Boolean,
     completedDigits: Set<Int>,
     modifier: Modifier = Modifier
 ) {
@@ -145,6 +148,14 @@ fun NumberKeyboard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Button(
+                onClick = { gameActions.toggleNoteMode() },
+                shape = RectangleShape,
+                colors = if (isNoteMode) ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary) else ButtonDefaults.buttonColors(),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = stringResource(R.string.notes))
+            }
             Button(
                 onClick = { gameActions.startNewGame(Difficulty.EASY) },
                 shape = RectangleShape,

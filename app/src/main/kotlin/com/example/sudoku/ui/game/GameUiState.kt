@@ -13,6 +13,7 @@ data class GameUiState(
     val mistakes: Int = 0,
     val remainingHints: Int = 3,
     val lastErrorCell: Pair<Int, Int>? = null,
+    val isNoteMode: Boolean = false,
     val isLoading: Boolean = false,
     val completedDigits: Set<Int> = emptySet()
 )

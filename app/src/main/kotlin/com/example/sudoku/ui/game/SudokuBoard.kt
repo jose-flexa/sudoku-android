@@ -100,6 +100,37 @@ fun SudokuCell(
                 },
                 fontSize = 20.sp
             )
+        } else if (cell.notes.isNotEmpty()) {
+            SudokuNotesGrid(notes = cell.notes)
+        }
+    }
+}
+
+@Composable
+fun SudokuNotesGrid(notes: Set<Int>) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        for (row in 0 until 3) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                for (col in 0 until 3) {
+                    val num = row * 3 + col + 1
+                    if (notes.contains(num)) {
+                        Text(
+                            text = num.toString(),
+                            fontSize = 8.sp,
+                            color = Color.Gray,
+                            lineHeight = 8.sp
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.size(8.dp))
+                    }
+                }
+            }
         }
     }
 }
