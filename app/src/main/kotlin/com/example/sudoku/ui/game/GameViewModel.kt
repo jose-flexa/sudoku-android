@@ -34,6 +34,7 @@ class GameViewModel @Inject constructor(
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (true) {
+                if (currentGame?.status == GameStatus.WON) break
                 delay(1000)
                 currentGame = currentGame?.let { 
                     val updated = it.copy(elapsedSeconds = it.elapsedSeconds + 1)
